@@ -25,7 +25,7 @@ function App() {
         formData.answer3,
         formData.answer4
       ],
-      correctAnswer: formData.correctAnswer
+      correctIndex: formData.correctIndex
     }
     fetch(fetchUrl, {
       method: "POST",
@@ -57,10 +57,30 @@ function App() {
     })))
   }
 
+  function handleChange(e, id) {
+    fetch(`${fetchUrl}/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        correctIndex: e.target.value
+      })
+    })
+    .then(setQuestions(questions.map(item => {
+      if (item.id !== id) return item;
+      else return {
+        ...item,
+        correctIndex: e.target.value
+      }
+    })))
+  }
+
   return (
     <main>
       <AdminNavBar onChangePage={setPage} />
-      {page === "Form" ? <QuestionForm handleSubmit={handleSubmit} questions={questions}/> : <QuestionList handleDelete={handleDelete} questions={questions}/>}
+      {page === "Form" ? <QuestionForm handleSubmit={handleSubmit} questions={questions}/> : <QuestionList handleChange={handleChange} handleDelete={handleDelete} questions={questions}/>}
     </main>
   );
 }
